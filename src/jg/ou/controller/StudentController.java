@@ -1,6 +1,8 @@
 package jg.ou.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -48,7 +50,6 @@ public class StudentController extends HttpServlet {
 		request.setAttribute("stuList", stuList);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
 		dispatcher.forward(request, response);
-
 	}
 
 	/**
@@ -57,7 +58,19 @@ public class StudentController extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		request.setCharacterEncoding("utf-8");
+		String stu_id = request.getParameter("stu_id");
+		String stu_name = request.getParameter("stu_name");
+		String stu_sex = request.getParameter("stu_sex");
+		String stu_age = request.getParameter("stu_age");
+		String stu_major = request.getParameter("stu_major");
+		Student student = new Student(Integer.parseInt(stu_id), Integer.parseInt(stu_sex), Integer.parseInt(stu_age),
+				stu_name, stu_major);
+		List<Student> stuList = new ArrayList<Student>();
+		stuList.add(student);
+		int res = stuDao.createStudent(stuList);
+		PrintWriter writer = response.getWriter();
+		writer.println(res);
 	}
 
 }

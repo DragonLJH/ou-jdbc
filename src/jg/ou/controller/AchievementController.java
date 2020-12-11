@@ -22,9 +22,9 @@ import jg.ou.dao.courseDao;
 public class AchievementController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private courseDao courDao;
+	private courseDao courDao = courseDao.INSTANCE;
 	
-	private achievementDao achieveDao;
+	private achievementDao achieveDao = achievementDao.INSTANCE;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -47,12 +47,15 @@ public class AchievementController extends HttpServlet {
 		String stu_id = request.getParameter("stu_id") == "" ? "0" : request.getParameter("stu_id");
 		String course_name = request.getParameter("course_id") == "" ? null : request.getParameter("course_id");
 		String result = request.getParameter("result") == "" ? "0" : request.getParameter("result");
-
-		Course course = new Course();
-		course.setCourse_name(course_name);
-		List<Course> courselist = courDao.queryInfoByData(course);
-		course = courselist.get(1);
-		int course_id = course.getCourse_id();
+		int course_id = 0;
+		if(course_name != null) {
+			Course course = new Course();
+			course.setCourse_name(course_name);
+			List<Course> courselist = courDao.queryInfoByData(course);
+			course = courselist.get(0);
+			course_id = course.getCourse_id();
+		}
+		
 
 		Achievement achieve = new Achievement(Integer.parseInt(achievement_id), Integer.parseInt(stu_id), course_id,
 				Double.parseDouble(result));

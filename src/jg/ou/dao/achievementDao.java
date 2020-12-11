@@ -28,7 +28,7 @@ public class achievementDao {
 			// 打开链接
 			conn = jdbc.helper();
 			String sql;
-			sql = "SELECT achievement_id, stu_id , course_id , result  FROM student";
+			sql = "SELECT achievement_id, stu_id , course_id , result  FROM achievement";
 			// 判断传来的student对象里包含哪些数据
 			if (achievement.getAchievement_id() != 0) {
 				if (sql.indexOf("where") != -1) {
@@ -59,11 +59,11 @@ public class achievementDao {
 				flag = flag + 1;
 				map.put(flag, achievement.getCourse_id());
 			}
-			if (achievement.getResult() != 0) {
+			if (achievement.getResult() != 0.0) {
 				if (sql.indexOf("where") != -1) {
-					sql = sql + " and stu_age = ?";
+					sql = sql + " and result = ?";
 				} else {
-					sql = sql + " where stu_age = ?";
+					sql = sql + " where result = ?";
 				}
 				flag = flag + 1;
 				map.put(flag, achievement.getResult());
