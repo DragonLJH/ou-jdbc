@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jg.ou.commom.Teacher;
@@ -14,6 +15,56 @@ public class teacherDao {
 	jdbcHelper jdbc = jdbcHelper.INSTANCE;
 
 	public final static teacherDao INSTANCE = new teacherDao();
+	
+	public List<Teacher> queryAllTeacher() {
+		List<Teacher> list = new ArrayList<Teacher>();
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		try {
+			// 打开链接
+			conn = jdbc.helper();
+			String sql;
+			sql = "SELECT teacher_id, teacher_name FROM teacher ";
+			// 执行查询
+			stmt = conn.prepareStatement(sql);
+			//新增、更新、删除 >>> executeUpdate(); 查询 >>> executeQuery();
+			ResultSet rs = stmt.executeQuery();
+			// 展开结果集数据库
+			while (rs.next()) {
+				// 通过字段检索
+				int teacher_id = rs.getInt("teacher_id");
+				String teacher_name = rs.getString("teacher_name");
+				Teacher teac = new Teacher();
+				teac.setTeacher_id(teacher_id);
+				teac.setTeacher_name(teacher_name);
+				list.add(teac);
+			}
+			// 完成后关闭
+			rs.close();
+			stmt.close();
+			conn.close();
+		} catch (SQLException se) {
+			// 处理 JDBC 错误
+			se.printStackTrace();
+		} catch (Exception e) {
+			// 处理 Class.forName 错误
+			e.printStackTrace();
+		} finally {
+			// 关闭资源
+			try {
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException se2) {
+			} // 什么都不做
+			try {
+				if (conn != null)
+					conn.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		return list;
+	}
 
 	/**
 	 * 

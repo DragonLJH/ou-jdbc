@@ -9,7 +9,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import jg.ou.commom.Achievement;
+import jg.ou.commom.Course;
 import jg.ou.commom.Login;
 import jg.ou.commom.Student;
 import jg.ou.dao.achievementDao;
@@ -24,7 +27,7 @@ import jg.ou.dao.studentDao;
 @WebServlet("/login")
 public class LoginController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+
 	private studentDao stuDao = studentDao.INSTANCE;
 	private loginDao login = loginDao.INSTANCE;
 	private manageDao manage = manageDao.INSTANCE;
@@ -45,23 +48,31 @@ public class LoginController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		HttpSession session = request.getSession(); 
 		String stu_id = request.getParameter("stu_id");
 		String pwd = request.getParameter("pwd");
 		int id = Integer.parseInt(stu_id);
 		String management = manage.queryManageByName(id);
 		Login al = login.queryLoginByid(id);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("404.jsp");
-		
+
 		if (al.getPwd().equals(pwd)) {
+			session.setAttribute("LoginId", id);
 			if (management.equals("admin")) {
 				dispatcher = request.getRequestDispatcher("index.jsp");
 			} else {
 				Student stu = new Student();
 				stu.setStu_id(id);
-				List<Student> list =  stuDao.queryInfoByData(stu);
+				List<Student> list = stuDao.queryInfoByData(stu);
 				Student aStudent = list.get(0);
 				request.setAttribute("aStudent", aStudent);
+				Achievement achievement = new Achievement();
+				achievement.setStu_id(id);
+				List<Achievement> achieveList = achieveDao.queryInfoByData(achievement);
+				request.setAttribute("achieveList", achieveList);
+				Course course = new Course();
+				List<Course> courseList = courDao.queryInfoByData(course);
+				request.setAttribute("courseList", courseList);
 				dispatcher = request.getRequestDispatcher("student.jsp");
 			}
 		}
